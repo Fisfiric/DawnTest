@@ -39,7 +39,7 @@
       assign ratio = 1
     endif
   -%}
-  <div class="card-wrapper product-card-wrapper underline-links-hover">
+  <div class="card-wrapper product-card-wrapper underline-links-hover" {% if quick_add == 'overlay' and  card_product.variants.size > 1 %} quick-add="true" {% endif %} >
     <div
       class="
         card card--{{ settings.card_style }}
@@ -54,8 +54,76 @@
     >
       <div
         class="card__inner {% if settings.card_style == 'standard' %}color-{{ settings.card_color_scheme }} gradient{% endif %}{% if card_product.featured_media or settings.card_style == 'standard' %} ratio{% endif %}"
-        style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+         style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+         data-show-variants="false"
       >
+        {% if quick_add == 'overlay' %}
+          <div class="variant-picker-overlay">
+           {%  assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
+            <button class="toggle-button" id="enable_variants{{ card_product.id }}">Quick Add</button>
+            <div id="variant-picker{{ card_product.id }}" style="display: none;">
+            <product-form data-section-id="{{ section.id }}">
+                {%- form 'product',
+                  card_product,
+                  id: product_form_id,
+                  class: 'form',
+                  novalidate: 'novalidate',
+                  data-type: 'add-to-cart-form'
+                -%}
+                  <input
+                    type="hidden"
+                    name="id"
+                    value="{{ card_product.selected_or_first_available_variant.id }}"
+                    class="product-variant-id"
+                    {% if card_product.selected_or_first_available_variant.available == false %}
+                      disabled
+                    {% endif %}
+                  >
+                  <variant-submit class="variant-container">
+                    {% for option in card_product.options_with_values %}
+                      <variant-group data-isSelected="false">
+                        <label >{{ option.name }}</label>
+                        {% for value in option.values %}
+                          <button class="variant-button" data-product-id="{{ card_product.id }}" data-variant-id="{{ value.id }}">{{ value }}</button>
+                        {% endfor %} 
+                      </variant-group>
+                    {% endfor %}
+                    {%- render 'progress-bar' -%}
+                    <script type="application/json">
+                              {{ card_product.variants | json }}
+                    </script>
+                    </variant-submit>
+                {%- endform -%}
+              </product-form>
+{% comment %} 
+              <ul class="donate-now">
+                <li>
+                  <input type="radio" id="a25" name="amount" />
+                  <label for="a25">$25</label>
+                </li>
+                <li>
+                  <input type="radio" id="a50" name="amount" />
+                  <label for="a50">$50</label>
+                </li>
+                <li>
+                  <input type="radio" id="a75" name="amount" checked="checked" />
+                  <label for="a75">$75</label>
+                </li>
+                <li>
+                  <input type="radio" id="a100" name="amount" />
+                  <label for="a100">$100</label>
+                </li>
+                <li>
+                  <input type="radio" id="other" name="amount" />
+                  <label for="other">other:</label>
+                </li>
+                <li>
+                  <input type="text" id="otherAmount" name="numAmount" />
+                </li>
+              </ul> {% endcomment %}
+            </div>
+          </div>
+        {% endif %}
         {%- if card_product.featured_media -%}
           <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
             <div class="media media--transparent media--hover-effect">
@@ -512,6 +580,21 @@
               </modal-dialog>
             </div>
           {% endif %}
+        
+        {% elsif quick_add == 'overlay' %}
+          <div class="quick-add no-js-hidden">
+            {%- liquid
+              assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id
+              assign qty_rules = false
+              if card_product.selected_or_first_available_variant.quantity_rule.min > 1 or card_product.selected_or_first_available_variant.quantity_rule.max != null or card_product.selected_or_first_available_variant.quantity_rule.increment > 1
+                assign qty_rules = true
+              endif
+            -%}
+            {%- if card_product.variants.size > 1 or qty_rules -%}
+              
+           
+            {%- endif -%}
+          </div>
         {% endif %}
         <div class="card__badge {{ settings.badge_position }}">
           {%- if card_product.available == false -%}

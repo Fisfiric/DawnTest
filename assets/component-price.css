@@ -9,7 +9,78 @@
   display: inline-block;
   vertical-align: top;
 }
+.variant-picker-overlay {
+  position: absolute; /* Position this overlay absolutely within its container */
+  top: 50%; /* Adjust as necessary to place the overlay */
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center using transform */
+  z-index: 2; /* Ensure this overlay is above the pseudo-element */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Disable pointer events to allow clicks to pass through */
+  display: none;
+}
+.variant-picker-overlay--active {
+  position: absolute; /* Position this overlay absolutely within its container */
+  top: 50%; /* Adjust as necessary to place the overlay */
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center using transform */
+  z-index: 2; /* Ensure this overlay is above the pseudo-element */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Disable pointer events to allow clicks to pass through */
+}
+.variant-picker-overlay--active .toggle-button {
+  background-color: #000000;
+  color: rgb(139, 139, 139);
+  padding: 10px 20px;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  border-radius: 24px;
+  pointer-events: auto; /* Re-enable pointer events for the .toggle-button itself */
+  z-index: 3;
+}
 
+.variant-picker-overlay--active ul li input {
+  position: relative;
+  z-index: 3;
+}
+.variant-container {
+  display: flex;
+  flex-direction: column; /* Ensure each child takes a new line */
+}
+
+variant-group {
+  display: block; /* Ensure the element is block-level */
+  width: 100%; /* Take the full width of the container */
+  margin-bottom: 10px; /* Optional: Add some space between the groups */
+}
+
+.variant-button {
+  margin: 5px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  position: relative;
+  z-index: 4;
+  pointer-events: auto; /* Re-enable pointer events for the .toggle-button itself */
+}
+.variant-button.active {
+  background-color: #007bff;
+  color: #fff;
+}
 .price.price--unavailable {
   visibility: hidden;
 }
